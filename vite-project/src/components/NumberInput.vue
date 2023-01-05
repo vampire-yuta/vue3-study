@@ -11,17 +11,18 @@ export default {
       type: Number,
       default: 0,
     },
-  },
-  modleModifiers: {
-    default: () => ({}),
+    modelModifiers: {
+      default: () => ({}),
+    },
   },
   methods: {
     emitValue({ target: { value } }) {
+      console.log(value);
       if (this.modelModifiers.numberOnly && value === "") {
         value = 0;
       }
 
-      this.$emit("update:modelValue", Number(value));
+      this.$emit('update:modelValue', Number(value));
     },
   },
 };

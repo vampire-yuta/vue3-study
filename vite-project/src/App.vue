@@ -1,11 +1,11 @@
 <template>
   <TheHeader text="MyCounter" />
   <div>{{ count }}</div>
-  <BaseButton @onClick="plusOne">+</BaseButton>
-  <BaseButton @onClick="minusOne">-</BaseButton>
+  <BaseButton :disabled="hasMaxCount" @onClick="plusOne">+</BaseButton>
+  <BaseButton :disabled="hasMinCount" @onClick="minusOne">-</BaseButton>
   <div>
-    <NumberInput v-model.numberOnly="inputCount" />
-    <BaseButton @onClick="insertCount">Insert</BaseButton>
+    <NumberInput v-model.numberOnly="inputCount" max="9999" min="0" />
+    <BaseButton @onClick="insertCount">insert</BaseButton>
   </div>
 </template>
 
@@ -26,6 +26,28 @@ export default {
       inputCount: 0,
     };
   },
+  watch: {
+    inputCount(value) {
+      if (value >= 9999) {
+        this.inputCount = 9999;
+        console.log(">= 9999");
+      }
+
+      if (value <= 0) {
+        this.inputCount = 0;
+        console.log("<= 0");
+      }
+    },
+  },
+  computed: {
+    hasMaxCount() {
+      return this.count >= 9999;
+    },
+
+    hasMinCount() {
+      return this.count <= 0;
+    },
+  },
   methods: {
     plusOne() {
       this.count++;
@@ -36,7 +58,10 @@ export default {
       console.log("-");
     },
     insertCount() {
+      console.log("-----");
       this.count = this.inputCount;
+      console.log(this.count);
+      console.log("-----");
       console.log("insert");
     },
   },
