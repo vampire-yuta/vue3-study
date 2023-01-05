@@ -1,6 +1,12 @@
 <template>
   <TheHeader text="MyCounter" />
-  <div>{{ count }}</div>
+
+  <!-- if modifying or overtreshold, Changing Validation Message. -->
+  <div v-if="!validationMessageList.length">{{ count }}</div>
+  <!-- Printing validation message list in loop. -->
+  <div v-else v-for="message in validationMessageList" :key="message">
+    {{ message }}
+  </div>
   <BaseButton :disabled="hasMaxCount" @onClick="plusOne">+</BaseButton>
   <BaseButton :disabled="hasMinCount" @onClick="minusOne">-</BaseButton>
   <div>
@@ -24,19 +30,13 @@ export default {
     return {
       count: 0,
       inputCount: 0,
+      isEditing: false,
     };
   },
   watch: {
-    inputCount(value) {
-      if (value >= 9999) {
-        this.inputCount = 9999;
-        console.log(">= 9999");
-      }
-
-      if (value <= 0) {
-        this.inputCount = 0;
-        console.log("<= 0");
-      }
+    inputCount() {
+      // When editing, Editing Flag to true.
+      this.isEditing = true;
     },
   },
   computed: {
@@ -46,6 +46,31 @@ export default {
 
     hasMinCount() {
       return this.count <= 0;
+    },
+    hasMaxInputCount() {
+      // when inputCount over 9999, return true.
+      return this.inputCount > 9999;
+    },
+    hasMinInputCount() {
+      return this.inputCount < 0;
+    },
+    validationMessageList() {
+      const validationList = [];
+
+      // when editing, pushing message.
+      if (this.isEditing) {
+        validationList.push("Editing...");
+      }
+
+      if (this.hasMaxInputCount) {
+        validationList.push("Not input over 9999.");
+      }
+
+      if (this.hasMinInputCount) {
+        validationList.push("Not input under 0.");
+      }
+
+      return validationList;
     },
   },
   methods: {
@@ -58,11 +83,9 @@ export default {
       console.log("-");
     },
     insertCount() {
-      console.log("-----");
+      if (this.hasMaxInputCount || this.hasMinInputCount) return;
       this.count = this.inputCount;
-      console.log(this.count);
-      console.log("-----");
-      console.log("insert");
+      this.isEditing = false;
     },
   },
 };
